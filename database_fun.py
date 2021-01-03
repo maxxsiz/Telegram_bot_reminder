@@ -20,19 +20,19 @@ def add_new_remider(user_id, remider_id, remider_name, remider_description, remi
 def remider_edit(edit_type, user_id, remider_id, remider_name, remider_description, remider_type, periodisity, break_time, active_status):#редагування напоминнаня (видалення, замороження, зміна данних)
     if edit_type == "delete":#видалення нагадування
         c = conn.cursor()
-        с.execute("DELETE FROM ? WHERE remider_id = ?", (user_id, remider_id))
+        c.execute("DELETE FROM ? WHERE remider_id = ?", (user_id, remider_id))
         conn.commit()
         conn.close()
         return "Нагадування видалено"
     elif edit_type == "freeze": #замороження нагадування
         c = conn.cursor()
-        с.execute("UPDATE ? SET active_status = ? WHERE remider_id = ?", (user_id, active_status, remider_id))
+        c.execute("UPDATE ? SET active_status = ? WHERE remider_id = ?", (user_id, active_status, remider_id))
         conn.commit()
         conn.close()
         return "Нагадування призупинено"
     elif edit_type == "edit":#редагування напоминнаня
         c = conn.cursor()
-        с.execute("""UPDATE ? SET remider_name = ?, remider_description = ?, remider_type = ?, periodisity = ?, break_time = ? WHERE remider_id = ?""", (user_id, remider_name, remider_description, remider_type, periodisity, break_time, remider_id))
+        c.execute("""UPDATE ? SET remider_name = ?, remider_description = ?, remider_type = ?, periodisity = ?, break_time = ? WHERE remider_id = ?""", (user_id, remider_name, remider_description, remider_type, periodisity, break_time, remider_id))
         conn.commit()
         conn.close()
         return "Нагадування змінено"

@@ -1,8 +1,28 @@
-import telebot
-from settings import token
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+import logging
 
-bot = telebot.TeleBot(token)
+from aiogram import Bot, types
+from aiogram.contrib.middlewares.logging import LoggingMiddleware
+from aiogram.dispatcher import Dispatcher
+from aiogram.dispatcher.webhook import SendMessage
+from aiogram.utils.executor import start_webhook
+from .settings import token
+
+API_TOKEN = token
+
+# webhook settings
+WEBHOOK_HOST = 'https://your.domain'
+WEBHOOK_PATH = '/path/to/api'
+WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
+
+# webserver settings
+WEBAPP_HOST = 'localhost'  # or ip
+WEBAPP_PORT = 3001
+
+logging.basicConfig(level=logging.INFO)
+
+bot = Bot(token=API_TOKEN)
+dp = Dispatcher(bot)
+dp.middleware.setup(LoggingMiddleware())
 
 def menu_markup():
     markup = InlineKeyboardMarkup()
@@ -36,8 +56,8 @@ def show_stat_markup():
                 InlineKeyboardButton("Аналіз за весь час", callback_data="analyze_stat"))
     return markup
     
-def bot_main():
-    @bot.message_handler(commands=['start','menu'])
+@dp.message_handler(commands=['start', 'help'])
+async def send_welcome(message: types.Message):
     def start_message(message):
         if message.text == "/start":
             bot.send_message(message.chat.id, """Привіт я бот нагадувач, буду тобі нагадувати про щось що ти мусиш робити кожен день або декілька разів в день.
@@ -91,12 +111,15 @@ def bot_main():
         elif call.data == "analyze_stat":
             bot.delete_message(call.message.chat.id, call.message.message_id)
 
-    bot.polling()
-        
-def start_restart():
-    try:
-        bot_main()
-    except Exception as e:
-        start_restart()
 
-start_restart()
+if __name__ == '__main__':
+    start_webhook(
+        dispatcher=dp,
+        webhook_path=WEBHOOK_PATH,
+        on_startup=on_startup,
+        on_shutdown=on_shutdown,
+        skip_updates=True,
+        host=WEBAPP_HOST,
+        port=WEBAPP_PORT,
+    )
+        
