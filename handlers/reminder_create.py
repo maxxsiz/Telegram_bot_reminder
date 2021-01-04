@@ -3,7 +3,6 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from main import dp, bot
 
-
 class ReminderInfo(StatesGroup):
     waiting_for_remider_name = State()
     waiting_for_reminder_description = State()
