@@ -8,7 +8,9 @@ from aiogram.utils.executor import start_webhook
 from aiogram.utils import executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
+from aiogram.dispatcher.filters.state import State, StatesGroup
 from settings import TOKEN
+from aiogram.dispatcher import FSMContext
 import keyboards as kb
 
 API_TOKEN = TOKEN
@@ -27,7 +29,13 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
-    
+
+class ReminderInfo(StatesGroup):
+    waiting_for_remider_name = State()
+    waiting_for_reminder_description = State()
+    waiting_for_reminder_periodisity = State()
+    waiting_for_reminder_break_time = State()
+
 @dp.message_handler(commands=['start', 'help', 'menu'])
 async def send_welcome(message: types.Message):
     if message.text == "/start" or message.text == "/help" :
@@ -38,18 +46,18 @@ async def send_welcome(message: types.Message):
 
 @dp.message_handler()
 async def log_fun(message: types.Message):
-    return print(message.text) 
+    await print(message.text) 
 
-@dp.callback_query_handler(lambda c: c.data)
+@dp.callback_query_handler(lambda c: c.data, state = "*")
 async def process_all_callback(callback_query: types.CallbackQuery):
     chat_id = callback_query.from_user.id
     message_id = callback_query.message.message_id
-    if callback_query.data == "add_remider":
+    if callback_query.data == "add_reminder":
         await bot.delete_message(chat_id, message_id)
-        await bot.send_message(chat_id,"Виберіть, що Вас цікавить.", reply_markup=kb.add_remider_markup())
-    elif callback_query.data == "edit_remider":
+        await bot.send_message(chat_id,"Виберіть, що Вас цікавить.", reply_markup=kb.add_reminder_markup())
+    elif callback_query.data == "edit_reminder":
         await bot.delete_message(chat_id, message_id)
-        await bot.send_message(chat_id,"Виберіть, що Вас цікавить.", reply_markup=kb.edit_remider_markup())
+        await bot.send_message(chat_id,"Виберіть, що Вас цікавить.", reply_markup=kb.edit_reminder_markup())
     elif callback_query.data == "show_stat":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, "Виберіть, що Вас цікавить.", reply_markup=kb.show_stat_markup())
@@ -57,12 +65,12 @@ async def process_all_callback(callback_query: types.CallbackQuery):
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, "В розробці")
     #add_remider
-    elif callback_query.data == "add_remider":
-        await bot.delete_message(chat_id, message_id)
-        await bot.send_message(chat_id, "Виберіть, що Вас цікавить.")
-    elif callback_query.data == "add_remider_with_bd":
+    elif callback_query.data == "add_reminder_with_bd":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id,"Виберіть, що Вас цікавить.") 
+    elif callback_query.data == "add_reminder_simple":
+        await bot.send_message(chat_id, "Впишіть короткий опис нагадування яке буде в вас висвітлюватися, наприклад: 'Відпочинь від комп'ютера'")
+        await ReminderInfo.waiting_for_remider_name.set()
     #edit_remider
     elif callback_query.data == "edit_name":
         await bot.delete_message(chat_id, message_id)

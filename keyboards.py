@@ -7,21 +7,21 @@ def menu_markup():
     markup = InlineKeyboardMarkup()
     markup.row_width = 2
     markup.one_time_keyboard=True
-    markup.add(InlineKeyboardButton("Добавити напоминання", callback_data="add_remider"),
-                InlineKeyboardButton("Редагувати напоминнання", callback_data="edit_remider"),
+    markup.add(InlineKeyboardButton("Добавити напоминання", callback_data="add_reminder"),
+                InlineKeyboardButton("Редагувати напоминнання", callback_data="edit_reminder"),
                 InlineKeyboardButton("Показати статистику", callback_data="show_stat"),
                 InlineKeyboardButton("Інше", callback_data="other"))
     return markup
 
-def add_remider_markup():
+def add_reminder_markup():
     markup = InlineKeyboardMarkup()
     markup.row_width = 1
     markup.one_time_keyboard=True
-    markup.add(InlineKeyboardButton("Добавити повторююче нагадування", callback_data="add_remider"),
-                InlineKeyboardButton("Добавити повторююче нагадування з данними", callback_data="add_remider_with_bd"))
+    markup.add(InlineKeyboardButton("Добавити повторююче нагадування", callback_data="add_reminder_simple"),
+                InlineKeyboardButton("Добавити повторююче нагадування з данними", callback_data="add_reminder_with_bd"))
     return markup
 
-def edit_remider_markup():
+def edit_reminder_markup():
     markup = InlineKeyboardMarkup()
     markup.row_width = 2
     markup.one_time_keyboard=True
