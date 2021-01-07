@@ -2,9 +2,9 @@ import sqlite3
 
 conn = sqlite3.connect('sqlite.db')
 
-def add_new_user(user_id, user_first_name, registration_date, language, timezone):#добавление пользователя 1tablica  (user_id, name, date_registration)
+def add_new_user(user_id, user_name, user_first_name, registration_date, language, timezone):#добавление пользователя 1tablica  (user_id, name, date_registration)
     c = conn.cursor()
-    c.execute("INSERT INTO users_info VALUES (?,?,?,?,?)",(user_id, user_first_name, registration_date, language, timezone))
+    c.execute("INSERT INTO users_info VALUES (?,?,?,?,?,?)",(user_id, user_name, user_first_name, registration_date, language, timezone))
     #создание личной таблицы пользователя (remider_id, name , description, type, periodisity, break_time, active_status)
     c.execute("""CREATE TABLE ? 
              (remider_id INT, remider_name TEXT, remider_description TEXT, remider_type TEXT, periodisity INT, break_time INT, active_status BOOLEAN)""",(user_id))

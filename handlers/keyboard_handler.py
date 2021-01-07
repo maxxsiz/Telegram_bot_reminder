@@ -28,10 +28,6 @@ async def process_all_callback(callback_query: types.CallbackQuery):
     elif callback_query.data == "other":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, "В розробці")
-    #add_remider
-    elif callback_query.data == "add_reminder_with_bd":
-        await bot.delete_message(chat_id, message_id)
-        await bot.send_message(chat_id,"Виберіть, що Вас цікавить.") 
     #edit_remider
     elif callback_query.data == "edit_name":
         await bot.delete_message(chat_id, message_id)
