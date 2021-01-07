@@ -2,9 +2,15 @@ from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.webhook import SendMessage
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-import keyboards as kb
-from main import dp, bot
 from aiogram import types
+
+import os,sys,inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir) 
+
+import keyboards as kb
+from misc import dp, bot
 
 @dp.callback_query_handler(lambda c: c.data, state = "*")
 async def process_all_callback(callback_query: types.CallbackQuery):
