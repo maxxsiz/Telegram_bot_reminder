@@ -12,6 +12,7 @@ sys.path.insert(0,parentdir)
 import keyboards as kb
 from misc import dp, bot
 
+
 @dp.callback_query_handler(lambda c: c.data, state = "*")
 async def process_all_callback(callback_query: types.CallbackQuery):
     chat_id = callback_query.from_user.id

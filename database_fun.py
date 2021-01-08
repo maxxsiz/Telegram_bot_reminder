@@ -52,4 +52,13 @@ def all_remiders(user_id,remider_type): #витягування списку н�
 
 def remider_stat(user_id):
     return "в розробці"
-#витягування данних для статистики
+
+
+def check_register(user_id):
+    c = conn.cursor()
+    is_user = c.execute("SELECT * FROM users_info WHERE user_id = ? ",(user_id))
+    check = c.fetchall()
+    if check is not None:
+        return True
+    else:
+        return False
