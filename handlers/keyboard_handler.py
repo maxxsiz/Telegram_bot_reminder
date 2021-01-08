@@ -26,10 +26,13 @@ async def process_all_callback(callback_query: types.CallbackQuery):
     elif callback_query.data == "show_stat":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, "Виберіть, що Вас цікавить.", reply_markup=kb.show_stat_markup())
+    elif callback_query.data == "show_reminders":
+        await bot.delete_message(chat_id, message_id)
+        await bot.send_message(chat_id, "Виберіть, що Вас цікавить.", reply_markup=kb.show_reminders_markup())
     elif callback_query.data == "other":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, "В розробці")
-    #edit_remider
+    #edit_reminder
     elif callback_query.data == "edit_name":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(callback_query.data.message.chat.id, "Введіть нову назву нагадування ( максимальна довжина 20 знаків ) ")

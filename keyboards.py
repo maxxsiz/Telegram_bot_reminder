@@ -10,6 +10,7 @@ def menu_markup():
     markup.add(InlineKeyboardButton("Добавити напоминання", callback_data="add_reminder"),
                 InlineKeyboardButton("Редагувати напоминнання", callback_data="edit_reminder"),
                 InlineKeyboardButton("Показати статистику", callback_data="show_stat"),
+                InlineKeyboardButton("Показати мої нагадування", callback_data="show_reminders"),
                 InlineKeyboardButton("Інше", callback_data="other"))
     return markup
 
@@ -26,8 +27,18 @@ def edit_reminder_markup():
     markup.row_width = 2
     markup.one_time_keyboard=True
     markup.add(InlineKeyboardButton("Змінити назву нагадування", callback_data="edit_name"),
+                InlineKeyboardButton("Змінити назву нагадування", callback_data="edit_description"),
                 InlineKeyboardButton("Змінити частоту нагадування", callback_data="edit_periodicity"),
                 InlineKeyboardButton("Змінити період перериву", callback_data="edit_break_time"))
+    return markup
+
+def show_reminders_markup():
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 2
+    markup.one_time_keyboard=True
+    markup.add(InlineKeyboardButton("Показати всі нагадування", callback_data="show_all_reminders"),
+                InlineKeyboardButton("Показати нагадування прості", callback_data="show_simple_reminders"),
+                InlineKeyboardButton("Показати продвінуті нагадування", callback_data="show_adv_reminders"))
     return markup
 
 def show_stat_markup():
