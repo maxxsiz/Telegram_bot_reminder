@@ -7,7 +7,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir) 
 from misc import dp, bot
-from database_fun import add_new_reminder
+from database_fun import add_new_reminder, check_reminder_count
 
 class ReminderInfo(StatesGroup):
     waiting_for_reminder_name = State()
@@ -55,14 +55,16 @@ async def add_reminder_step_5(message: types.Message, state: FSMContext):
         await message.reply("Нажаль ви не коректно ввели, повторіть знову")
         return
     user_data = await state.get_data()
-    await message.answer(f"Ви створили просте нагадування: {user_data['reminder_name']}.\n"
+    reminder_count = check_reminder_count(message.from_user.id)
+    if reminder_count == False:
+        await message.reply("В вас максимальна кількість нагадувань вже")
+    else:
+        add_new_reminder(message.from_user.id, message.from_user.id, user_data['reminder_name'], user_data['reminder_description'], "simple", user_data['reminder_periodisity'], message.text, True)
+        await message.answer(f"Ви створили просте нагадування: {user_data['reminder_name']}.\n"
                          f"Опис: {user_data['reminder_description']}\n"
                          f"Повторення кожних {user_data['reminder_periodisity']} \n"
                          f"Перерва: {message.text}\n")
-    await state.finish()
-    await add_new_reminder(message.from_user.id, message.from_user.id, user_data['reminder_name'], user_data['reminder_description'], "simple", user_data['reminder_periodisity'], message.text, True)
-
-
+        await state.finish()
 
 class ReminderDbInfo(StatesGroup):
     waiting_for_reminder_name = State()
@@ -120,10 +122,14 @@ async def add_reminderdb_step_6(message: types.Message, state: FSMContext):
         await message.reply("Не довше 20 знаків")
         return
     user_data = await state.get_data()
-    await message.answer(f"Ви створили продвінуте нагадування:{user_data['reminder_name']}.\n"
+    reminder_count = check_reminder_count(message.from_user.id)
+    if reminder_count == False:
+        await message.reply("В вас максимальна кількість нагадувань вже")
+    else:
+        add_new_reminder(message.from_user.id, str(message.from_user.id) + str(reminder_count), user_data['reminder_name'], user_data['reminder_description'], "advansed", user_data['reminder_periodisity'], message.text, True)
+        await message.answer(f"Ви створили продвінуте нагадування:{user_data['reminder_name']}.\n"
                          f"Опис: {user_data['reminder_description']}\n"
                          f"Повторення кожних:{user_data['reminder_periodisity']}\n"
                          f"Пауза{user_data['reminder_break_time']}\n"
                          f"Рахувати ми будемо: {message.text}")
-    await state.finish()
-    await add_new_reminder(message.from_user.id, message.from_user.id, user_data['reminder_name'], user_data['reminder_description'], "advansed", user_data['reminder_periodisity'], message.text, True)
+        await state.finish()
