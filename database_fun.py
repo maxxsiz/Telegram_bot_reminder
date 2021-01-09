@@ -2,9 +2,9 @@ import sqlite3
 
 conn = sqlite3.connect('sqlite.db')
 
-def add_new_user(user_id, user_name, user_first_name, registration_date, language, timezone):#добавление пользователя 1tablica  (user_id, name, date_registration)
+def add_new_user(user_id, user_first_name, user_last_name, registration_date, language, timezone):#добавление пользователя 1tablica  (user_id, name, date_registration)
     c = conn.cursor()
-    c.execute("INSERT INTO users_info VALUES (?,?,?,?,?,?)",(user_id, user_name, user_first_name, registration_date, language, timezone))
+    c.execute("INSERT INTO users_info VALUES (?,?,?,?,?,?)",(user_id, user_first_name, user_last_name, registration_date, language, timezone,))
     conn.commit()
     conn.close()
 
@@ -55,9 +55,13 @@ def reminder_stat(user_id):
 
 def check_register(user_id):
     c = conn.cursor()
-    c.execute("SELECT * FROM users_info WHERE user_id = ? ",(user_id))
-    check = c.fetchall()
+    print(user_id)
+    c.execute("SELECT * FROM users_info WHERE user_id = ? ",(user_id,))
+    check = c.fetchone()
+    print(check)
     if check is not None:
-        return True
-    else:
+        print("вже зареєстрований")
         return False
+    else:
+        print("ще не зареєстрований")
+        return True

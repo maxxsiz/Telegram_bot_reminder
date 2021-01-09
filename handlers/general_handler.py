@@ -20,8 +20,8 @@ class TimezoneInfo(StatesGroup):
 async def send_welcome(message: types.Message):
     if message.text == "/start":
         await message.reply( """Привіт я бот нагадувач, буду тобі нагадувати про щось що ти мусиш робити кожен день або декілька разів в день.
-        Також я можу вести статистику, наприклад нагадувати тобі присідати а після записувати скільки ти зробив разів. Якщо зацікавив жми /menu""")
-        if check_register(message.from_user.id) == True:
+        Також я можу вести статистику, наприклад нагадувати тобі присідати а після записувати скільки ти зробив разів.""")
+        if check_register(message.from_user.id) == False:
             await message.reply("Якщо зацікавив жми /menu")
         else:
             await bot.send_message(message.from_user.id, "Але для початку потрібно вказати яка у вас година, нажміть на варіант ...")
@@ -36,7 +36,7 @@ async def do_register(message: types.Message, state: FSMContext):
         await message.reply("Будь ласка вибери годину зі списку")
         return
     await state.update_data(reminder_periodisity=message.text)
-    time_zone = await calc_timezone(message.text[1:3])
-    await add_new_user(message.from_user.id, message.from_user.username, message.from_user.first_name, date.today(), message.from_user.language_code, time_zone )
+    time_zone = calc_timezone(message.text[1:])
+    add_new_user(message.from_user.id, message.from_user.first_name, message.from_user.last_name, date.today(), message.from_user.language_code, time_zone )
     await message.reply(f"Ваша часова зона {time_zone}.\nЖми /menu щоб продовжити.")
     await state.finish()
