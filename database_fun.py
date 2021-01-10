@@ -1,8 +1,8 @@
 import sqlite3
 
-conn = sqlite3.connect('sqlite.db')
 
 def add_new_user(userid, user_first_name, user_last_name, registration_date, language, timezone):#добавление пользователя 1tablica  (user_id, name, date_registration)
+    conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
     c.execute("INSERT INTO users_info VALUES (?,?,?,?,?,?)",(userid, user_first_name, user_last_name, registration_date, language, timezone,))
     conn.commit()
@@ -17,6 +17,7 @@ def add_new_reminder(userid, reminder_id, reminder_name, reminder_description, r
 
 def reminder_edit(edit_type, userid, reminder_id, reminder_name, reminder_description, reminder_type, periodisity, break_time, active_status):#редагування напоминнаня (видалення, замороження, зміна данних)
     if edit_type == "delete":#видалення нагадування
+        conn = sqlite3.connect('sqlite.db')
         c = conn.cursor()
         c.execute("DELETE FROM reminders_main WHERE reminder_id = ?", (reminder_id,))
         c.execute("DELETE FROM reminders_simple_info WHERE reminder_id = ?", (reminder_id,))
@@ -25,12 +26,14 @@ def reminder_edit(edit_type, userid, reminder_id, reminder_name, reminder_descri
         conn.close()
         return "Нагадування видалено"
     elif edit_type == "freeze": #замороження нагадування
+        conn = sqlite3.connect('sqlite.db')
         c = conn.cursor()
         c.execute("UPDATE reminders_main SET active_status = ? WHERE reminder_id = ?", (active_status, reminder_id,))
         conn.commit()
         conn.close()
         return "Нагадування призупинено"
     elif edit_type == "edit":#редагування напоминнаня
+        conn = sqlite3.connect('sqlite.db')
         c = conn.cursor()
         c.execute("""UPDATE reminders_main SET reminder_name = ?, reminder_description = ?, reminder_type = ?, periodisity = ?, break_time = ? WHERE reminder_id = ?""", (reminder_name, reminder_description, reminder_type, periodisity, break_time, reminder_id,))
         conn.commit()
@@ -39,22 +42,44 @@ def reminder_edit(edit_type, userid, reminder_id, reminder_name, reminder_descri
     else:
         return "Упс, щось пішло не так"
 
-def all_reminders(userid, reminder_type): #витягування списку напоминаннь да інформації про них
+def all_reminders(userid, reminder_type, few_type): #витягування списку напоминаннь да інформації про них
+    conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
     if reminder_type == "simple_type":
         all_reminders = c.execute("SELECT * FROM reminders_main WHERE reminder_type = ? AND user_id = ?",(reminder_type, userid,))
     elif reminder_type == "stat_type":
         all_reminders = c.execute("SELECT * FROM reminders_main WHERE reminder_type = ? AND user_id = ?",(reminder_type, userid,))
     elif reminder_type == "all":
-        all_reminders = c.execute("SELECT * FROM reminders_main WHERE  user_id = ?",(userid,))
-    conn.close()
-    return all_reminders
+        all_reminders = c.execute("SELECT * FROM reminders_main WHERE  user_id = ?",(userid,))  
+    all_reminders_text = "Кнопка | Назва | Повний опис | Повторення кожних | Перерва \n"
+    for row in all_reminders:
+        if few_type == "withslash":
+            all_reminders_text += f"/{row[1]} | {row[2]} | {row[3]} | {row[4]} | {row[5]} \n"
+        else few_type == "withoutslash":
+            all_reminders_text += f"{row[2]} | {row[3]} | {row[4]} | {row[5]} \n"
+        conn.close()
+    return all_reminders_text
+    
+def all_reminders_list(user_id, reminder_type):
+    conn = sqlite3.connect('sqlite.db')
+    c = conn.cursor()
+    if reminder_type == "simple_type":
+        all_reminders = c.execute("SELECT reminder_id FROM reminders_main WHERE reminder_type = ? AND user_id = ?",(reminder_type, userid,))
+    elif reminder_type == "stat_type":
+        all_reminders = c.execute("SELECT reminder_id FROM reminders_main WHERE reminder_type = ? AND user_id = ?",(reminder_type, userid,))
+    elif reminder_type == "all":
+        all_reminders = c.execute("SELECT reminder_id FROM reminders_main WHERE  user_id = ?",(userid,))  
+    all_reminders_list = []
+    for row in all_reminders:
+        all_reminders_list.append(row[0])
+    return all_reminders_list
 
 def reminder_stat(userid):
     return "в розробці"
 
 
 def check_register(userid):
+    conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
     c.execute("SELECT * FROM users_info WHERE user_id = ? ",(userid,))
     check = c.fetchone()
@@ -66,6 +91,7 @@ def check_register(userid):
         return True
 
 def check_reminder_count(userid):
+    conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
     c.execute("SELECT * FROM reminders_main WHERE user_id = ? ",(userid,))
     check = c.fetchall()
@@ -77,6 +103,6 @@ def check_reminder_count(userid):
     elif len_check < 100:
         return "0" + str(len_check)
     elif len_check < 1000:
-         return str(len_check)
+        return str(len_check)
     else:
         return False

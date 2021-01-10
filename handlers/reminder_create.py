@@ -59,7 +59,7 @@ async def add_reminder_step_5(message: types.Message, state: FSMContext):
     if reminder_count == False:
         await message.reply("В вас максимальна кількість нагадувань вже")
     else:
-        add_new_reminder(message.from_user.id, message.from_user.id, user_data['reminder_name'], user_data['reminder_description'], "simple", user_data['reminder_periodisity'], message.text, True)
+        add_new_reminder(message.from_user.id, str(message.from_user.id) + str(reminder_count), user_data['reminder_name'], user_data['reminder_description'], "simple", user_data['reminder_periodisity'], message.text, True)
         await message.answer(f"Ви створили просте нагадування: {user_data['reminder_name']}.\n"
                          f"Опис: {user_data['reminder_description']}\n"
                          f"Повторення кожних {user_data['reminder_periodisity']} \n"

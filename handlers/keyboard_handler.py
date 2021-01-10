@@ -20,7 +20,7 @@ async def process_all_callback(callback_query: types.CallbackQuery):
     if callback_query.data == "add_reminder":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id,"Виберіть, що Вас цікавить.", reply_markup=kb.add_reminder_markup())
-    elif callback_query.data == "edit_reminder":
+    elif callback_query.data == "controll_reminder":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id,"Виберіть, що Вас цікавить.", reply_markup=kb.edit_reminder_markup())
     elif callback_query.data == "show_stat":
