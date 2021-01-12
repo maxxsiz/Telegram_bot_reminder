@@ -15,7 +15,6 @@ def add_new_reminder(userid, reminder_id, reminder_name, reminder_description, r
     conn.commit()
     conn.close()
 
-
 def reminder_delete(reminder_id):
     conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
@@ -118,3 +117,15 @@ def check_reminder_count(userid):
         return str(len_check)
     else:
         return False
+
+
+"""
+def create_personal_db(userid):
+    conn = sqlite3.connect('sqlite.db')
+    c = conn.cursor()
+    sql =CREATE TABLE IF NOT EXISTS ?(
+        
+
+    c.execute(sql,(?,))
+    conn.close()
+    """
