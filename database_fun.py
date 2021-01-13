@@ -52,6 +52,13 @@ def reminder_edit(userid, reminder_id, reminder_name, reminder_description, remi
     conn.close()
     return "Нагадування змінено"
 
+def single_reminder(reminder_id):
+    conn = sqlite3.connect('sqlite.db')
+    c = conn.cursor()
+    c.execute("SELECT reminder_name, reminder_description, periodisity, break_time FROM reminders_main WHERE reminder_id = ?",(reminder_id))
+    datas = c.fetchall()
+    return datas
+
 def all_reminders(userid, reminder_type, few_type): #витягування списку напоминаннь да інформації про них
     conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
@@ -67,7 +74,7 @@ def all_reminders(userid, reminder_type, few_type): #витягування сп
             all_reminders_text += f"/{row[1]} | {row[2]} | {row[3]} | {row[4]} | {row[5]} \n"
         else:
             all_reminders_text += f"{row[2]} | {row[3]} | {row[4]} | {row[5]} \n"
-        conn.close()
+    conn.close()
     return all_reminders_text
 
 def all_reminders_list(userid, reminder_type):

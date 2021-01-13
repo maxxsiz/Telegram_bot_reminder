@@ -23,9 +23,6 @@ async def process_all_callback(callback_query: types.CallbackQuery):
     elif callback_query.data == "controll_reminder":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id,"Виберіть, що Вас цікавить.", reply_markup=kb.controll_reminder_markup())
-    elif callback_query.data == "edit_reminder":
-        await bot.delete_message(chat_id, message_id)
-        await bot.send_message(chat_id,"Виберіть, що Вас цікавить.", reply_markup=kb.edit_reminder_markup())
     elif callback_query.data == "show_stat":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, "Виберіть, що Вас цікавить.", reply_markup=kb.show_stat_markup())
@@ -35,16 +32,6 @@ async def process_all_callback(callback_query: types.CallbackQuery):
     elif callback_query.data == "other":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, "В розробці")
-    #edit_reminder
-    elif callback_query.data == "edit_name":
-        await bot.delete_message(chat_id, message_id)
-        await bot.send_message(chat_id, "Введіть нову назву нагадування ( максимальна довжина 20 знаків ) ")
-    elif callback_query.data == "edit_periodicity":
-        await bot.delete_message(chat_id, message_id)
-        await bot.send_message(chat_id, "Введіть час повтороно нагадування /n в годинах: 3h або ж в хвилинах 30m")
-    elif callback_query.data == "edit_break_time":
-        await bot.delete_message(chat_id, message_id)
-        await bot.send_message(chat_id, "Введіть період в 24 годинному форматі /n  наприклад: /21:00-6:00 ")
     #show_stat
     elif callback_query.data == "graf_some_period":
         await bot.delete_message(chat_id, message_id)
