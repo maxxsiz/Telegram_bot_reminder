@@ -44,10 +44,12 @@ def reminder_freeze(reminder_id, active_status):
     conn.close()
     return "Нагадування призупинено" 
     
-def reminder_edit(userid, reminder_id, reminder_name, reminder_description, reminder_type, periodisity, break_time, active_status):
+def reminder_edit(reminder_id, column_name, new_value):
+    print(reminder_id + column_name + new_value)
     conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
-    c.execute("""UPDATE reminders_main SET reminder_name = ?, reminder_description = ?, reminder_type = ?, periodisity = ?, break_time = ? WHERE reminder_id = ?""", (reminder_name, reminder_description, reminder_type, periodisity, break_time, reminder_id,))
+    q = "UPDATE reminders_main SET {kolumn} = {value} WHERE reminder_id = {reminderid}"
+    c.execute(q.format(kolumn = column_name, value = new_value, reminderid = reminder_id))
     conn.commit()
     conn.close()
     return "Нагадування змінено"
@@ -55,8 +57,8 @@ def reminder_edit(userid, reminder_id, reminder_name, reminder_description, remi
 def single_reminder(reminder_id):
     conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
-    c.execute("SELECT reminder_name, reminder_description, periodisity, break_time FROM reminders_main WHERE reminder_id = ?",(reminder_id))
-    datas = c.fetchall()
+    c.execute("SELECT reminder_name, reminder_description, periodisity, break_time FROM reminders_main WHERE reminder_id = ?",(reminder_id,))
+    datas = c.fetchone()
     return datas
 
 def all_reminders(userid, reminder_type, few_type): #витягування списку напоминаннь да інформації про них
@@ -71,9 +73,9 @@ def all_reminders(userid, reminder_type, few_type): #витягування сп
     all_reminders_text = "Кнопка | Назва | Повний опис | Повторення кожних | Перерва \n"
     for row in all_reminders:
         if few_type == "withslash":
-            all_reminders_text += f"/{row[1]} | {row[2]} | {row[3]} | {row[4]} | {row[5]} \n"
+            all_reminders_text += f"/{row[1]} | {row[2]} | {row[3]} | {row[5]} | {row[6]} \n"
         else:
-            all_reminders_text += f"{row[2]} | {row[3]} | {row[4]} | {row[5]} \n"
+            all_reminders_text += f"{row[2]} | {row[3]} | {row[5]} | {row[6]} \n"
     conn.close()
     return all_reminders_text
 
@@ -89,6 +91,7 @@ def all_reminders_list(userid, reminder_type):
     all_reminders_list = []
     for row in all_reminders:
         all_reminders_list.append(row[0])
+    print(all_reminders_list)
     conn.close()
     return all_reminders_list
 
