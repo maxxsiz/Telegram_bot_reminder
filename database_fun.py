@@ -1,5 +1,5 @@
 import sqlite3
-
+import codecs
 
 def add_new_user(userid, user_first_name, user_last_name, registration_date, language, timezone):#добавление пользователя 1tablica  (user_id, name, date_registration)
     conn = sqlite3.connect('sqlite.db')
@@ -8,10 +8,10 @@ def add_new_user(userid, user_first_name, user_last_name, registration_date, lan
     conn.commit()
     conn.close()
 
-def add_new_reminder(userid, reminder_id, reminder_name, reminder_description, reminder_type, periodisity, break_time, active_status):
+def add_new_reminder(userid, reminder_id, reminder_name, reminder_description, reminder_type, periodisity, break_time, active_status, count, stat_dict):
     conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
-    c.execute("INSERT INTO reminders_main VALUES (?,?,?,?,?,?,?,?)",(userid, reminder_id, reminder_name, reminder_description, reminder_type, periodisity, break_time, active_status,))
+    c.execute("INSERT INTO reminders_main VALUES (?,?,?,?,?,?,?,?,?,?)",(userid, reminder_id, reminder_name, reminder_description, reminder_type, periodisity, break_time, active_status, count, stat_dict))
     conn.commit()
     conn.close()
 
@@ -19,8 +19,8 @@ def reminder_delete(reminder_id):
     conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
     c.execute("DELETE FROM reminders_main WHERE reminder_id = ?", (reminder_id,))
-    c.execute("DELETE FROM reminders_simple_info WHERE reminder_id = ?", (reminder_id,))
-    c.execute("DELETE FROM reminders_adv_info WHERE reminder_id = ?", (reminder_id,))
+    #c.execute("DELETE FROM reminders_simple_info WHERE reminder_id = ?", (reminder_id,))
+    #c.execute("DELETE FROM reminders_adv_info WHERE reminder_id = ?", (reminder_id,))
     conn.commit()
     conn.close()
     return "Нагадування видалено"
@@ -29,7 +29,7 @@ def check_reminder_status(reminder_id):
     conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
     c.execute("SELECT active_status FROM reminders_main WHERE reminder_id = ?",(reminder_id,))
-    if c.fetchone()[0]:
+    if int(c.fetchone()[0]) == 0:
         active_status = 0
     else: 
         active_status = 1
@@ -45,11 +45,12 @@ def reminder_freeze(reminder_id, active_status):
     return "Нагадування призупинено" 
     
 def reminder_edit(reminder_id, column_name, new_value):
-    print(reminder_id + column_name + new_value)
     conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
-    q = "UPDATE reminders_main SET {kolumn} = {value} WHERE reminder_id = {reminderid}"
-    c.execute(q.format(kolumn = column_name, value = new_value, reminderid = reminder_id))
+    column_name = column_name.encode("utf-8").decode("utf-8")
+    q = "UPDATE reminders_main SET {kolumn} = ? WHERE reminder_id = ?".format(kolumn = column_name)
+    c.execute(q,(new_value, reminder_id))
+    print(q)
     conn.commit()
     conn.close()
     return "Нагадування змінено"

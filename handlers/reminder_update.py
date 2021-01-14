@@ -33,7 +33,7 @@ async def delete_reminder_step_2(message: types.Message, state: FSMContext):
     await ReminderDelete.next()
     await message.answer(f"Ви дійсно хочете видалити нагадування {message.text}",reply_markup=kb.yes_no_markup())
 
-@dp.message_handler(lambda c: c.data == "answer_yes" or c.data == "answer_no" , state=ReminderDelete.waiting_for_check)
+@dp.callback_query_handler(lambda c: c.data == "answer_yes" or c.data == "answer_no" , state=ReminderDelete.waiting_for_check)
 async def delete_reminder_step_3(callback_query: types.CallbackQuery, state: FSMContext):
     await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
     user_data = await state.get_data()
@@ -59,26 +59,29 @@ async def freeze_reminder_step_1(callback_query: types.CallbackQuery):
 
 @dp.message_handler(state=ReminderFreeze.waiting_for_reminder_id, content_types=types.ContentTypes.TEXT)
 async def freeze_reminder_step_2(message: types.Message, state: FSMContext):
-    if message.text[1:] in all_reminders_list(message.from_user.id, "all") :
+    if int(message.text[1:]) in all_reminders_list(message.from_user.id, "all") :
         await message.reply("Вибери номер зі списку")
         return
     rm_status = check_reminder_status(message.text[1:])
-    await state.update_data(reminder_id=message.text[1:], reminder_status = lambda rm_status: 0 if rm_status == 1 else 0)
-    if rm_status:
+    print(rm_status)
+    new_rm_status = lambda rm_status: False if rm_status == 1 else True
+    await state.update_data(reminder_id=message.text[1:], reminder_status = new_rm_status(rm_status))
+    if rm_status == 1:
         await message.answer(f"Ви дійсно хочете дезактивувати нагадування {message.text}",reply_markup=kb.yes_no_markup())
     else: 
         await message.answer(f"Ви дійсно хочете активувати нагадування {message.text}",reply_markup=kb.yes_no_markup())
     await ReminderFreeze.next()
 
-@dp.message_handler(lambda c: c.data == "answer_yes" or c.data == "answer_no" , state=ReminderFreeze.waiting_for_check)
+@dp.callback_query_handler(lambda c: c.data == "answer_yes" or c.data == "answer_no" , state=ReminderFreeze.waiting_for_check)
 async def freeze_reminder_step_3(callback_query: types.CallbackQuery, state: FSMContext):
     await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
-    user_data = await state.get_data()
     if callback_query.data == "answer_yes":
+        user_data = await state.get_data()
+        print(user_data['reminder_status'])
         reminder_freeze(user_data['reminder_id'], user_data['reminder_status'])
-        await bot.send_message(callback_query.from_user.id, f"Нагадування {user_data['reminder_id']} успішно видалено.")
+        await bot.send_message(callback_query.from_user.id, f"Нагадування {user_data['reminder_id']} успішно зупинене.")
     elif callback_query.data == "answer_no":
-        await bot.send_message(callback_query.from_user.id, "Видалення було відмінено")
+        await bot.send_message(callback_query.from_user.id, "Зупинення було відмінено")
     await state.finish()
 
 
@@ -95,7 +98,6 @@ class ReminderEdit(StatesGroup):
 
 @dp.callback_query_handler(lambda c: c.data == "edit_reminder", state = "*") # first step send reminders_list
 async def edit_reminder_step_1(callback_query: types.CallbackQuery):
-    print('ok')
     chat_id = callback_query.from_user.id
     await bot.delete_message(chat_id, callback_query.message.message_id)
     await bot.send_message(chat_id, all_reminders(chat_id,"all","withslash"))
@@ -108,7 +110,6 @@ async def edit_reminder_step_2(message: types.Message, state: FSMContext):
         return
     await state.update_data(reminder_id=message.text[1:])
     datas = single_reminder(message.text[1:])
-    print(datas)
     await bot.send_message(message.from_user.id, f"""Що ви хочете поміняти в нагадуванні?\n
                                                     Ваше теперішнє нагадування:\n
                                                     Назва: {datas[0]}\n
@@ -139,7 +140,6 @@ async def edit_reminder_name(message: types.Message, state: FSMContext):
     if len(message.text) > 20:
         await message.reply("Некоректний формат")
         return
-    print("aaaa")
     await state.update_data(reminder_name=message.text)
     await bot.send_message(message.from_user.id, "Нова назва принята, чи хочете ви ще щось змінити?",reply_markup=kb.yes_no_markup())
     await ReminderEdit.answer_about_more.set()
@@ -184,6 +184,7 @@ async def edit_reminder_askmore(callback_query: types.CallbackQuery, state: FSMC
                 reminder_id = reminders_data[i]
             else:
                 reminder_edit(reminder_id, i, reminders_data[i])
+        await bot.send_message(callback_query.from_user.id, "Зміни успішно затвердженні")
         await state.finish()
     
 

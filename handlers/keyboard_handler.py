@@ -11,6 +11,7 @@ sys.path.insert(0,parentdir)
 
 import keyboards as kb
 from misc import dp, bot
+from database_fun import all_reminders
 
 
 @dp.callback_query_handler(lambda c: c.data, state = "*")
@@ -28,11 +29,10 @@ async def process_all_callback(callback_query: types.CallbackQuery):
         await bot.send_message(chat_id, "Виберіть, що Вас цікавить.", reply_markup=kb.show_stat_markup())
     elif callback_query.data == "show_reminders":
         await bot.delete_message(chat_id, message_id)
-        await bot.send_message(chat_id, "Виберіть, що Вас цікавить.", reply_markup=kb.show_reminders_markup())
+        await bot.send_message(chat_id, all_reminders(chat_id, "all", ""))
     elif callback_query.data == "other":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, "В розробці")
-    #show_stat
     elif callback_query.data == "graf_some_period":
         await bot.delete_message(chat_id, message_id)
         await bot.send_message(chat_id, "В розробці")
