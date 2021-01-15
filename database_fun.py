@@ -99,6 +99,14 @@ def all_reminders_list(userid, reminder_type):
 def reminder_stat(userid):
     return "в розробці"
 
+def all_active_reminders():
+    conn = sqlite3.connect('sqlite.db')
+    c = conn.cursor()
+    c.execute("SELECT reminder_id, periodisity, break_time FROM reminders_main WHERE active_status = True")
+    for row in all_reminders:
+        all_reminders_list.append(row[0])
+    return rm_list
+
 
 def check_register(userid):
     conn = sqlite3.connect('sqlite.db')
@@ -130,13 +138,10 @@ def check_reminder_count(userid):
         return False
 
 
-"""
-def create_personal_db(userid):
+def take_user_timezone(userid):
     conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
-    sql =CREATE TABLE IF NOT EXISTS ?(
-        
-
-    c.execute(sql,(?,))
+    c.execute("SELECT timezone FROM user_info WHERE user_id = ? ",(userid,))
+    timezone = c.fetchone()
     conn.close()
-    """
+    return timezone

@@ -12,13 +12,12 @@ def check_description(description):
     else:
         return True
 
-def break_time(breaktime):
-    m_1 = re.fullmatch(r'[0-1][0-9][:][0-5][0-9]-[0-2][0-9][:][0-5][0-9]', breaktime)
-    m_2 = re.fullmatch(r'[2][0-3][:][0-5][0-9]-[2][0-3][:][0-5][0-9]', breaktime)
-    return True if m_1 or m_2 else False
+def check_break_time(breaktime):
+    match = re.fullmatch(r'[0-1][0-9][:][0-5][0-9]-[0-2][0-9][:][0-5][0-9]|[2][0-3][:][0-5][0-9]-[2][0-3][:][0-5][0-9]', breaktime)
+    return True if match else False
 
-def check_periodisity(periodisity):
-    match = re.fullmatch(r'\d{1,2}[h,m]', periodisity)
+def check_periodisity(periodisity): # min 5m, max 8h or 480m
+    match = re.fullmatch(r'[1-8]h|[5-9]m|[1-9][0-9]m|[1-3][0-9][0-9]m|4[0-8]0m|4[0-7][0-9]m', periodisity)
     return True if match else False
 
 def check_date(date):

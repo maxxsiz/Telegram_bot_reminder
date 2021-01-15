@@ -9,7 +9,7 @@ sys.path.insert(0,parentdir)
 from misc import dp, bot
 from database_fun import reminder_edit, all_reminders, all_reminders_list,reminder_delete, reminder_freeze, check_reminder_status, reminder_edit, single_reminder
 import keyboards as kb
-
+from check_valid import check_name, check_periodisity, check_break_time, check_description
 #reminder delete 
 
 class ReminderDelete(StatesGroup):
@@ -137,7 +137,7 @@ async def edit_reminder_step_3(callback_query: types.CallbackQuery, state: FSMCo
 
 @dp.message_handler(state=ReminderEdit.waiting_for_name, content_types=types.ContentTypes.TEXT) # choose reminder, and send edit inlinebutton
 async def edit_reminder_name(message: types.Message, state: FSMContext):
-    if len(message.text) > 20:
+    if check_name(message.text.lower()) == False:
         await message.reply("Некоректний формат")
         return
     await state.update_data(reminder_name=message.text)
@@ -146,7 +146,7 @@ async def edit_reminder_name(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=ReminderEdit.waiting_for_description, content_types=types.ContentTypes.TEXT) # choose reminder, and send edit inlinebutton
 async def edit_reminder_description(message: types.Message, state: FSMContext):
-    if len(message.text) > 100:
+    if check_description(message.text.lower()) == False:
         await message.reply("Некоректний формат")
         return
     await state.update_data(reminder_description=message.text)
@@ -155,7 +155,7 @@ async def edit_reminder_description(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=ReminderEdit.waiting_for_periodisity, content_types=types.ContentTypes.TEXT) # choose reminder, and send edit inlinebutton
 async def edit_reminder_periodisity(message: types.Message, state: FSMContext):
-    if len(message.text) > 20:
+    if check_periodisity(message.text.lower()) == False:
         await message.reply("Некоректний формат")
         return
     await state.update_data(periodisity=message.text)
@@ -164,7 +164,7 @@ async def edit_reminder_periodisity(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=ReminderEdit.waiting_for_breaktime, content_types=types.ContentTypes.TEXT) # choose reminder, and send edit inlinebutton
 async def edit_reminder_breaktime(message: types.Message, state: FSMContext):
-    if len(message.text) > 20:
+    if check_break_time(message.text.lower()) == False:
         await message.reply("Некоректний формат")
         return
     await state.update_data(break_time=message.text)
