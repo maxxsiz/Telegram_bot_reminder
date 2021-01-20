@@ -102,9 +102,10 @@ def reminder_stat(userid):
 def all_active_reminders():
     conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
-    c.execute("SELECT reminder_id, periodisity, break_time FROM reminders_main WHERE active_status = True")
+    rm_list = []
+    all_reminders = c.execute("SELECT reminder_id, periodisity, break_time FROM reminders_main WHERE active_status = True")
     for row in all_reminders:
-        all_reminders_list.append(row[0])
+        rm_list.append(row[0])
     return rm_list
 
 

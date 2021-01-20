@@ -9,6 +9,7 @@ sys.path.insert(0,parentdir)
 from misc import dp, bot
 from database_fun import add_new_reminder, check_reminder_count
 from check_valid import check_name, check_periodisity, check_break_time, check_description
+from calculate_functions import create_time_line
 
 class ReminderInfo(StatesGroup):
     waiting_for_reminder_name = State()
@@ -60,11 +61,13 @@ async def add_reminder_step_5(message: types.Message, state: FSMContext):
     if reminder_count == False:
         await message.reply("В вас максимальна кількість нагадувань вже")
     else:
-        add_new_reminder(message.from_user.id, str(message.from_user.id) + str(reminder_count), user_data['reminder_name'], user_data['reminder_description'], "simple", user_data['reminder_periodisity'], message.text, True, "count",{})
+        time_list, time_str = create_time_line(message.from_user.id, user_data['reminder_periodisity'], message.text)
+        add_new_reminder(message.from_user.id, str(message.from_user.id) + str(reminder_count), user_data['reminder_name'], user_data['reminder_description'], "simple", user_data['reminder_periodisity'], message.text, True, "count",time_list)
         await message.answer(f"Ви створили просте нагадування: {user_data['reminder_name']}.\n"
                          f"Опис: {user_data['reminder_description']}\n"
                          f"Повторення кожних {user_data['reminder_periodisity']} \n"
                          f"Перерва: {message.text}\n")
+        await bot.send_message(message.from_user.id,"Ми будемо вам нагадувати о таких годинах: \n" + time_str)
         await state.finish()
 
 class ReminderDbInfo(StatesGroup):
@@ -128,10 +131,12 @@ async def add_reminderdb_step_6(message: types.Message, state: FSMContext):
     if reminder_count == False:
         await message.reply("В вас максимальна кількість нагадувань вже")
     else:
-        add_new_reminder(message.from_user.id, str(message.from_user.id) + str(reminder_count), user_data['reminder_name'], user_data['reminder_description'], "advansed", user_data['reminder_periodisity'], message.text, True,str(message.text),{})
+        time_list, time_str = create_time_line(message.from_user.id, user_data['reminder_periodisity'], user_data['reminder_break_time'])
+        add_new_reminder(message.from_user.id, str(message.from_user.id) + str(reminder_count), user_data['reminder_name'], user_data['reminder_description'], "advansed", user_data['reminder_periodisity'], message.text, True,str(message.text),time_list)
         await message.answer(f"Ви створили продвінуте нагадування:{user_data['reminder_name']}.\n"
                          f"Опис: {user_data['reminder_description']}\n"
                          f"Повторення кожних:{user_data['reminder_periodisity']}\n"
                          f"Пауза{user_data['reminder_break_time']}\n"
                          f"Рахувати ми будемо: {message.text}")
+        await bot.send_message(message.from_user.id,"Ми будемо вам нагадувати о таких годинах: \n" + time_str)
         await state.finish()
