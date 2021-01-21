@@ -61,7 +61,7 @@ async def add_reminder_step_5(message: types.Message, state: FSMContext):
     if reminder_count == False:
         await message.reply("В вас максимальна кількість нагадувань вже")
     else:
-        time_list, time_str = create_time_line(message.from_user.id, user_data['reminder_periodisity'], message.text)
+        time_list, time_str = create_time_line(str(message.from_user.id) + str(reminder_count), user_data['reminder_periodisity'], message.text)
         add_new_reminder(message.from_user.id, str(message.from_user.id) + str(reminder_count), user_data['reminder_name'], user_data['reminder_description'], "simple", user_data['reminder_periodisity'], message.text, True, "count",time_list)
         await message.answer(f"Ви створили просте нагадування: {user_data['reminder_name']}.\n"
                          f"Опис: {user_data['reminder_description']}\n"
@@ -131,7 +131,7 @@ async def add_reminderdb_step_6(message: types.Message, state: FSMContext):
     if reminder_count == False:
         await message.reply("В вас максимальна кількість нагадувань вже")
     else:
-        time_list, time_str = create_time_line(message.from_user.id, user_data['reminder_periodisity'], user_data['reminder_break_time'])
+        time_list, time_str = create_time_line(str(message.from_user.id) + str(reminder_count), user_data['reminder_periodisity'], user_data['reminder_break_time'])
         add_new_reminder(message.from_user.id, str(message.from_user.id) + str(reminder_count), user_data['reminder_name'], user_data['reminder_description'], "advansed", user_data['reminder_periodisity'], message.text, True,str(message.text),time_list)
         await message.answer(f"Ви створили продвінуте нагадування:{user_data['reminder_name']}.\n"
                          f"Опис: {user_data['reminder_description']}\n"
