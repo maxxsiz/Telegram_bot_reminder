@@ -11,7 +11,7 @@ def add_new_user(userid, user_first_name, user_last_name, registration_date, lan
 def add_new_reminder(userid, reminder_id, reminder_name, reminder_description, reminder_type, periodisity, break_time, active_status, count, stat_dict):
     conn = sqlite3.connect('sqlite.db')
     c = conn.cursor()
-    c.execute("INSERT INTO reminders_main VALUES (?,?,?,?,?,?,?,?,?,?)",(userid, reminder_id, reminder_name, reminder_description, reminder_type, periodisity, break_time, active_status, count, stat_dict))
+    c.execute("INSERT INTO reminders_main VALUES (?,?,?,?,?,?,?,?,?,?)",(userid, reminder_id, reminder_name, reminder_description, reminder_type, periodisity, break_time, active_status, count, str(stat_dict)))
     conn.commit()
     conn.close()
 
@@ -71,7 +71,10 @@ def all_reminders(userid, reminder_type, few_type): #витягування сп
         all_reminders = c.execute("SELECT * FROM reminders_main WHERE reminder_type = ? AND user_id = ?",(reminder_type, userid,))
     elif reminder_type == "all":
         all_reminders = c.execute("SELECT * FROM reminders_main WHERE  user_id = ?",(userid,))  
-    all_reminders_text = "Кнопка | Назва | Повний опис | Повторення кожних | Перерва \n"
+    if few_type == "withslash":
+        all_reminders_text = "Кнопка | Назва | Повний опис | Повторення кожних | Перерва \n"
+    else: 
+        all_reminders_text = "Назва | Повний опис | Повторення кожних | Перерва \n"
     for row in all_reminders:
         if few_type == "withslash":
             all_reminders_text += f"/{row[1]} | {row[2]} | {row[3]} | {row[5]} | {row[6]} \n"

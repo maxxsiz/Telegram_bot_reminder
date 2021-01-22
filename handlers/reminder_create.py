@@ -9,7 +9,7 @@ sys.path.insert(0,parentdir)
 from misc import dp, bot
 from database_fun import add_new_reminder, check_reminder_count
 from check_valid import check_name, check_periodisity, check_break_time, check_description
-from calculate_functions import create_time_line
+from calculate_functions import create_time_line_str
 
 class ReminderInfo(StatesGroup):
     waiting_for_reminder_name = State()
@@ -26,7 +26,7 @@ async def add_reminder_callback(callback_query: types.CallbackQuery):
 
 @dp.message_handler(state=ReminderInfo.waiting_for_reminder_name, content_types=types.ContentTypes.TEXT)
 async def add_reminder_step_2(message: types.Message, state: FSMContext):
-    if check_name(message.text.lower()) == False:
+    if check_name(message.text) == False:
         await message.reply("Максимальна довжина короткого опису 20 знаків")
         return
     await state.update_data(reminder_name=message.text)
@@ -35,7 +35,7 @@ async def add_reminder_step_2(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=ReminderInfo.waiting_for_reminder_description, content_types=types.ContentTypes.TEXT)
 async def add_reminder_step_3(message: types.Message, state: FSMContext):
-    if check_description(message.text.lower()) == False:
+    if check_description(message.text) == False:
         await message.reply("Максимальна довжина великого опису 200 знаків")
         return
     await state.update_data(reminder_description=message.text)
@@ -53,7 +53,7 @@ async def add_reminder_step_4(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=ReminderInfo.waiting_for_reminder_break_time, content_types=types.ContentTypes.TEXT)
 async def add_reminder_step_5(message: types.Message, state: FSMContext):
-    if check_break_time(message.text.lower()) == False:
+    if check_break_time(message.text) == False:
         await message.reply("Нажаль ви не коректно ввели, повторіть знову")
         return
     user_data = await state.get_data()
@@ -61,8 +61,8 @@ async def add_reminder_step_5(message: types.Message, state: FSMContext):
     if reminder_count == False:
         await message.reply("В вас максимальна кількість нагадувань вже")
     else:
-        time_list, time_str = create_time_line(str(message.from_user.id) + str(reminder_count), user_data['reminder_periodisity'], message.text)
-        add_new_reminder(message.from_user.id, str(message.from_user.id) + str(reminder_count), user_data['reminder_name'], user_data['reminder_description'], "simple", user_data['reminder_periodisity'], message.text, True, "count",time_list)
+        time_str = create_time_line_str(user_data['reminder_periodisity'], message.text)
+        add_new_reminder(message.from_user.id, str(message.from_user.id) + str(reminder_count), user_data['reminder_name'], user_data['reminder_description'], "simple", user_data['reminder_periodisity'], message.text, True, "count",time_str)
         await message.answer(f"Ви створили просте нагадування: {user_data['reminder_name']}.\n"
                          f"Опис: {user_data['reminder_description']}\n"
                          f"Повторення кожних {user_data['reminder_periodisity']} \n"
@@ -86,7 +86,7 @@ async def add_reminderdb_callback(callback_query: types.CallbackQuery):
 
 @dp.message_handler(state=ReminderDbInfo.waiting_for_reminder_name, content_types=types.ContentTypes.TEXT)
 async def add_reminderdb_step_2(message: types.Message, state: FSMContext):
-    if check_name(message.text.lower()) == False:
+    if check_name(message.text) == False:
         await message.reply("Максимальна довжина короткого опису 20 знаків")
         return
     await state.update_data(reminder_name=message.text)
@@ -95,7 +95,7 @@ async def add_reminderdb_step_2(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=ReminderDbInfo.waiting_for_reminder_description, content_types=types.ContentTypes.TEXT)
 async def add_reminderdb_step_3(message: types.Message, state: FSMContext):
-    if check_description(message.text.lower()) == False:
+    if check_description(message.text) == False:
         await message.reply("Максимальна довжина великого опису 200 знаків")
         return
     await state.update_data(reminder_description=message.text)
@@ -113,7 +113,7 @@ async def add_reminderdb_step_4(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=ReminderDbInfo.waiting_for_reminder_break_time, content_types=types.ContentTypes.TEXT)
 async def add_reminderdb_step_5(message: types.Message, state: FSMContext):
-    if check_break_time(message.text.lower()) == False:
+    if check_break_time(message.text) == False:
         await message.reply("Ви ввели некоректний період")
         return
     await state.update_data(reminder_break_time=message.text)
@@ -122,7 +122,7 @@ async def add_reminderdb_step_5(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=ReminderDbInfo.waiting_for_reminder_db_name, content_types=types.ContentTypes.TEXT)
 async def add_reminderdb_step_6(message: types.Message, state: FSMContext):
-    if check_name(message.text.lower()) == False:
+    if check_name(message.text) == False:
         await message.reply("Не довше 20 знаків")
         return
     user_data = await state.get_data()
@@ -131,8 +131,8 @@ async def add_reminderdb_step_6(message: types.Message, state: FSMContext):
     if reminder_count == False:
         await message.reply("В вас максимальна кількість нагадувань вже")
     else:
-        time_list, time_str = create_time_line(str(message.from_user.id) + str(reminder_count), user_data['reminder_periodisity'], user_data['reminder_break_time'])
-        add_new_reminder(message.from_user.id, str(message.from_user.id) + str(reminder_count), user_data['reminder_name'], user_data['reminder_description'], "advansed", user_data['reminder_periodisity'], message.text, True,str(message.text),time_list)
+        time_str = create_time_line_str(user_data['reminder_periodisity'], user_data['reminder_break_time'])
+        add_new_reminder(message.from_user.id, str(message.from_user.id) + str(reminder_count), user_data['reminder_name'], user_data['reminder_description'], "advansed", user_data['reminder_periodisity'], user_data['reminder_break_time'], True,str(message.text),time_str)
         await message.answer(f"Ви створили продвінуте нагадування:{user_data['reminder_name']}.\n"
                          f"Опис: {user_data['reminder_description']}\n"
                          f"Повторення кожних:{user_data['reminder_periodisity']}\n"

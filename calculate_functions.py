@@ -27,36 +27,48 @@ def calc_timezone(hour): #timezone calculator
     timezone =  int(hour) - int(now) + 1
     return timezone
 
-def create_time_line(reminder_id, periodisity, break_time): #create or update timeline for user`s solo reminder
+def create_time_line_str(periodisity, break_time): #create or update timeline for user`s solo reminder
+    start_t = timedelta(hours=int(break_time[-5:-3]), minutes=int(break_time[-2:])) #when reminder start working
+    end_t = timedelta(hours=int(break_time[:2]), minutes=int(break_time[3:5])) #when reminder end his work
+    per_min = lambda p: int(p[:-1]) if str(p[-1]) == "m" else int(p[:-1])*60 #periodisity
+    per_t = timedelta(minutes=per_min(periodisity))
+    space_count = 1
+    if start_t > end_t:
+        time_str = f"{start_t}, "
+        end_t = timedelta(hours=24) + end_t
+        while start_t < end_t - per_t:
+            start_t = start_t + per_t
+            if space_count % 3 == 0:
+                time_str += "\n"
+            time_str += f"{start_t}, " 
+            space_count += 1
+    else:
+        time_str = f"{start_t}, "
+        while start_t < end_t - per_t:
+            start_t = start_t + per_t
+            if space_count % 3 == 0:
+                time_str += "\n"
+            time_str += f"{start_t}, " 
+            space_count += 1
+    return time_str
+
+def create_time_line(reminder_id, periodisity, break_time):
     #tm = take_user_timezone(int(reminder_id[:-3])
     start_t = timedelta(hours=int(break_time[-5:-3]), minutes=int(break_time[-2:])) #when reminder start working
     end_t = timedelta(hours=int(break_time[:2]), minutes=int(break_time[3:5])) #when reminder end his work
     per_min = lambda p: int(p[:-1]) if str(p[-1]) == "m" else int(p[:-1])*60 #periodisity
     per_t = timedelta(minutes=per_min(periodisity))
-    time_str = ""
-    space_count = 0
     if start_t > end_t:
         end_t = timedelta(hours=24) + end_t
         time_line = [reminder_id, start_t]
         while start_t < end_t - per_t:
             start_t = start_t + per_t
             time_line.append(start_t)
-            if space_count % 3 == 0:
-                time_str += "\n"
-            time_str += f"{start_t}, " 
-            space_count += 1
+        time_line.pop()
     else:
         time_line = [reminder_id, start_t]
-        while start_t < end_t:
+        while start_t < end_t - per_t:
             start_t = start_t + per_t
             time_line.append(start_t)
-            if space_count % 3 == 0:
-                time_str += "\n"
-            time_str += f"{start_t}, " 
-            space_count += 1
         time_line.pop()
-
-    return time_line, time_str
-
-a, b = create_time_line(21253215, "30m", "01:00-09:30")
-print(b)
+    return time_line

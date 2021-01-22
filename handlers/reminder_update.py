@@ -10,7 +10,7 @@ from misc import dp, bot
 from database_fun import reminder_edit, all_reminders, all_reminders_list,reminder_delete, reminder_freeze, check_reminder_status, reminder_edit, single_reminder
 import keyboards as kb
 from check_valid import check_name, check_periodisity, check_break_time, check_description
-from calculate_functions import create_time_line
+from calculate_functions import create_time_line_str
 #reminder delete 
 
 class ReminderDelete(StatesGroup):
@@ -180,8 +180,8 @@ async def edit_reminder_askmore(callback_query: types.CallbackQuery, state: FSMC
         await bot.send_message(callback_query.from_user.id, "Що ви ще хочете поміняти в нагадуванні?",reply_markup=kb.edit_reminder_markup())
     elif callback_query.data == "answer_no":
         if "periodisity" in reminders_data or "break_time" in reminders_data:
-            time_list, time_str = create_time_line(callback_query.from_user.id, reminders_data['periodisity'], reminders_data['break_time'])
-            await state.update_data(stat_dict=time_list)
+            time_str = create_time_line_str(reminders_data['periodisity'], reminders_data['break_time'])
+            await state.update_data(stat_dict=time_str)
         reminders_data = await state.get_data()
         
         for i in reminders_data:
